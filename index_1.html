@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Replay Caffe & Food Bar - Cenovnik</title>
+<style>
+
+  :root {
+    --bg: #0c0a08;
+    --bg-elevated: #16120e;
+    --gold: #d4a843;
+    --gold-bright: #f0c869;
+    --cream: #ece4d6;
+    --muted: #9a8f7e;
+    --line: rgba(212,168,67,0.18);
+    --red-accent: #a8404a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html {
+    scroll-behavior: smooth;
+    color-scheme: dark;
+    background: #0c0a08 !important;
+  }
+
+  body {
+    background: var(--bg) !important;
+    background-image:
+      radial-gradient(circle at 20% 0%, rgba(212,168,67,0.06), transparent 40%),
+      radial-gradient(circle at 80% 100%, rgba(168,64,74,0.05), transparent 40%);
+    color: var(--cream) !important;
+    font-family: 'Georgia', 'Iowan Old Style', serif;
+    min-height: 100vh;
+    padding-bottom: 60px;
+  }
+
+  /* HERO */
+  .hero {
+    text-align: center;
+    padding: 48px 20px 28px;
+    border-bottom: 1px solid var(--line);
+    position: relative;
+  }
+
+  .hero::after {
+    content: "";
+    position: absolute;
+    bottom: -1px; left: 50%;
+    transform: translateX(-50%);
+    width: 80px; height: 2px;
+    background: var(--gold);
+  }
+
+  .hero .eyebrow {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 10px;
+  }
+
+  .hero h1 {
+    font-size: 38px;
+    letter-spacing: 1px;
+    font-weight: 400;
+    color: var(--gold-bright);
+    text-shadow: 0 2px 20px rgba(240,200,105,0.25);
+  }
+
+  .hero .sub {
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--muted);
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    letter-spacing: 1px;
+  }
+
+  /* NAV */
+  .nav {
+    display: flex;
+    overflow-x: auto;
+    gap: 8px;
+    padding: 16px 16px;
+    position: sticky;
+    top: 0;
+    background: rgba(12,10,8,0.92);
+    backdrop-filter: blur(6px);
+    z-index: 10;
+    border-bottom: 1px solid var(--line);
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .nav::-webkit-scrollbar { display: none; }
+
+  .nav a {
+    flex: 0 0 auto;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 8px 14px;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+  .nav a:active, .nav a.active {
+    color: var(--bg);
+    background: var(--gold);
+    border-color: var(--gold);
+  }
+
+  /* SECTIONS */
+  section {
+    padding: 36px 18px 8px;
+    max-width: 640px;
+    margin: 0 auto;
+    scroll-margin-top: 70px;
+  }
+
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .section-title h2 {
+    font-size: 22px;
+    color: var(--gold-bright);
+    font-weight: 400;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+
+  .section-title .rule {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, var(--line), transparent);
+  }
+
+  .section-note {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 18px;
+    margin-top: -8px;
+  }
+
+  /* PIZZA TABLE STYLE CARDS */
+  .pizza-head {
+    display: grid;
+    grid-template-columns: 1fr 56px 64px 64px;
+    gap: 6px;
+    padding: 0 4px 8px;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 6px;
+  }
+  .pizza-head span:not(:first-child) { text-align: right; }
+
+  .pizza-item {
+    display: grid;
+    grid-template-columns: 1fr 56px 64px 64px;
+    gap: 6px;
+    align-items: start;
+    padding: 12px 4px;
+    border-bottom: 1px solid rgba(212,168,67,0.08);
+  }
+
+  .pizza-item .name {
+    font-size: 16px;
+    color: var(--cream) !important;
+    opacity: 1 !important;
+    line-height: 1.3;
+  }
+
+  .pizza-item .desc {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 11.5px;
+    color: var(--muted);
+    margin-top: 3px;
+    line-height: 1.4;
+  }
+
+  .pizza-item .price {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 14px;
+    color: var(--gold-bright);
+    text-align: right;
+    white-space: nowrap;
+    padding-top: 1px;
+  }
+  .pizza-item .price.empty { color: var(--muted); opacity: 0.4; }
+
+  /* STANDARD ITEM ROW (palacinke, sendvici, etc) */
+  .item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 13px 4px;
+    border-bottom: 1px solid rgba(212,168,67,0.08);
+  }
+  .item-row:last-child { border-bottom: none; }
+
+  .item-row .info .name {
+    font-size: 16px;
+    color: var(--cream);
+  }
+  .item-row .info .desc {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 11.5px;
+    color: var(--muted);
+    margin-top: 3px;
+    line-height: 1.4;
+  }
+  .item-row .price {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 15px;
+    color: var(--gold-bright);
+    white-space: nowrap;
+    padding-top: 1px;
+  }
+
+  /* DODACI GRID (small add-ons, two columns) */
+  .addon-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 20px;
+  }
+  .addon-grid .addon {
+    display: flex;
+    justify-content: space-between;
+    padding: 9px 2px;
+    border-bottom: 1px dashed rgba(212,168,67,0.12);
+    font-size: 14px;
+  }
+  .addon-grid .addon .price {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    color: var(--gold-bright);
+    font-size: 13.5px;
+  }
+
+  .subgroup-label {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--red-accent);
+    margin: 22px 0 8px;
+  }
+  .subgroup-label:first-child { margin-top: 0; }
+
+  /* HIGHLIGHT BANNER (pohovane palacinke) */
+  .highlight-banner {
+    background: var(--bg-elevated);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 18px;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 12px;
+    color: var(--gold);
+    text-align: center;
+    letter-spacing: 0.3px;
+  }
+  .highlight-banner b { color: var(--gold-bright); }
+
+  footer {
+    text-align: center;
+    padding: 40px 20px 10px;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+  footer .line {
+    width: 40px; height: 1px;
+    background: var(--line);
+    margin: 0 auto 14px;
+  }
+
+</style>
+</head>
+<body>
+
+  <div class="hero">
+    <div class="eyebrow">Sivac</div>
+    <h1>Replay</h1>
+    <div class="sub">Caffe & Food Bar — Cenovnik</div>
+  </div>
+
+  <nav class="nav" id="nav">
+    <a href="#pizza">Pizza</a>
+    <a href="#pohovane">Pohovane palačinke</a>
+    <a href="#brzahrana">Brza hrana</a>
+    <a href="#sendvici">Sendviči</a>
+    <a href="#slane">Slane palačinke</a>
+    <a href="#slatke">Slatke palačinke</a>
+    <a href="#specijal">Specijal palačinke</a>
+    <a href="#mini">Mini palačinke</a>
+    <a href="#dodaci">Dodaci</a>
+  </nav>
+
+  <!-- PIZZA -->
+  <section id="pizza">
+    <div class="section-title"><h2>Pizza</h2><div class="rule"></div></div>
+    <div class="pizza-head">
+      <span></span><span>24cm</span><span>32cm</span><span>50cm</span>
+    </div>
+
+    <div class="pizza-item">
+      <div><div class="name">Kaprićoza</div><div class="desc">pelat, šunka, šampinjoni, kačkavalj, origano, masline</div></div>
+      <div class="price">400</div><div class="price">750</div><div class="price">1100</div>
+    </div>
+    <div class="pizza-item">
+      <div><div class="name">Mađarica</div><div class="desc">pelat, kulen, šampinjoni, kačkavalj, origano, masline</div></div>
+      <div class="price">400</div><div class="price">750</div><div class="price">1200</div>
+    </div>
+    <div class="pizza-item">
+      <div><div class="name">Margarita</div><div class="desc">pelat, sir, bosiljak, origano</div></div>
+      <div class="price">400</div><div class="price">750</div><div class="price">1100</div>
+    </div>
+    <div class="pizza-item">
+      <div><div class="name">Pileća</div><div class="desc">pelat, pileća prsa, šampinjoni, kačkavalj, origano, masline</div></div>
+      <div class="price">400</div><div class="price">750</div><div class="price">1200</div>
+    </div>
+    <div class="pizza-item">
+      <div><div class="name">4 vrste sira</div><div class="desc">pelat, šampinjoni, kačkavalj, mocarela, parmezan, gorgonzola</div></div>
+      <div class="price">500</div><div class="price">950</div><div class="price">1400</div>
+    </div>
+    <div class="pizza-item">
+      <div><div class="name">Njeguška</div><div class="desc">pelat, njeg. pršuta, šampinjoni, kačkavalj, origano, parmezan, masline, rukola</div></div>
+      <div class="price">450</div><div class="price">850</div><div class="price">1300</div>
+    </div>
+    <div class="pizza-item">
+      <div><div class="name">4 godišnja doba</div><div class="desc">njeguška, 4 vrste sira, šunkarica, kulen</div></div>
+      <div class="price empty">—</div><div class="price">850</div><div class="price">1300</div>
+    </div>
+    <div class="pizza-item">
+      <div><div class="name">Tunjevina</div><div class="desc">pelat, šampinjoni, kačkavalj, crveni luk, origano, masline</div></div>
+      <div class="price">400</div><div class="price">800</div><div class="price">1200</div>
+    </div>
+    <div class="pizza-item">
+      <div><div class="name">Tunjevina posna</div><div class="desc">pelat, šampinjoni, posni sir, crveni luk, origano, masline</div></div>
+      <div class="price">400</div><div class="price">800</div><div class="price">1200</div>
+    </div>
+    <div class="pizza-item">
+      <div><div class="name">Vegeterijana <span style="color:var(--muted); font-size:11px;">(redovna i posna)</span></div><div class="desc">pelat, povrće, kačkavalj, (posni sir), origano</div></div>
+      <div class="price">400</div><div class="price">750</div><div class="price">1100</div>
+    </div>
+    <div class="pizza-item">
+      <div><div class="name">Bela</div><div class="desc">pavlaka, pečenica, kukuruz šećerac, kačkavalj, origano, masline</div></div>
+      <div class="price">450</div><div class="price">850</div><div class="price">1300</div>
+    </div>
+    <div class="pizza-item">
+      <div><div class="name">Miljanova</div><div class="desc">pelat, njegoška pančeta, šampinjoni, kačkavalj, feta sir, jaje</div></div>
+      <div class="price">500</div><div class="price">950</div><div class="price">1400</div>
+    </div>
+    <div class="pizza-item">
+      <div><div class="name">Replay</div><div class="desc">pelat, njegoška pršuta, njegoška pančeta, šampinjoni, kačkavalj, mozarela, parmezan, origano, masline, rukola</div></div>
+      <div class="price">550</div><div class="price">950</div><div class="price">1550</div>
+    </div>
+  </section>
+
+  <!-- POHOVANE PALACINKE -->
+  <section id="pohovane">
+    <div class="section-title"><h2>Pohovane palačinke</h2><div class="rule"></div></div>
+    <div class="highlight-banner">U porciji dobijate <b>2</b> bogato punjene pohovane palačinke!</div>
+
+    <div class="item-row">
+      <div class="info"><div class="name">Šunkarica</div><div class="desc">uz tatar sos</div></div>
+      <div class="price">400</div>
+    </div>
+    <div class="item-row">
+      <div class="info"><div class="name">Belo meso</div><div class="desc">uz tatar sos</div></div>
+      <div class="price">500</div>
+    </div>
+    <div class="item-row">
+      <div class="info"><div class="name">Burger palačinka</div><div class="desc">uz burger sos</div></div>
+      <div class="price">500</div>
+    </div>
+  </section>
+
+  <!-- BRZA HRANA -->
+  <section id="brzahrana">
+    <div class="section-title"><h2>Brza hrana</h2><div class="rule"></div></div>
+    <div class="item-row">
+      <div class="info"><div class="name">Pomfrit</div></div>
+      <div class="price">500</div>
+    </div>
+    <div class="item-row">
+      <div class="info"><div class="name">Nugetsi</div></div>
+      <div class="price">500</div>
+    </div>
+  </section>
+
+  <!-- SENDVICI -->
+  <section id="sendvici">
+    <div class="section-title"><h2>Topli sendviči</h2><div class="rule"></div></div>
+    <div class="item-row">
+      <div class="info"><div class="name">Šunkarica</div><div class="desc">kečap, pavlaka, majonez, kačkavalj</div></div>
+      <div class="price">300</div>
+    </div>
+    <div class="item-row">
+      <div class="info"><div class="name">Pečenica</div><div class="desc">kečap, pavlaka, majonez, kačkavalj</div></div>
+      <div class="price">350</div>
+    </div>
+    <div class="item-row">
+      <div class="info"><div class="name">Kulen</div><div class="desc">kečap, pavlaka, majonez, kačkavalj</div></div>
+      <div class="price">350</div>
+    </div>
+    <div class="item-row">
+      <div class="info"><div class="name">Pileća prsa</div><div class="desc">kečap, pavlaka, majonez, kačkavalj</div></div>
+      <div class="price">350</div>
+    </div>
+    <div class="item-row">
+      <div class="info"><div class="name">Njegoška pršuta</div></div>
+      <div class="price">400</div>
+    </div>
+  </section>
+
+  <!-- SLANE PALACINKE -->
+  <section id="slane">
+    <div class="section-title"><h2>Slane palačinke</h2><div class="rule"></div></div>
+    <div class="item-row">
+      <div class="info"><div class="name">Pečenica</div><div class="desc">kečap, pavlaka, kačkavalj</div></div>
+      <div class="price">350</div>
+    </div>
+    <div class="item-row">
+      <div class="info"><div class="name">Kulen</div><div class="desc">kečap, pavlaka, kačkavalj</div></div>
+      <div class="price">350</div>
+    </div>
+    <div class="item-row">
+      <div class="info"><div class="name">Šunkarica</div><div class="desc">kečap, pavlaka, kačkavalj</div></div>
+      <div class="price">300</div>
+    </div>
+    <div class="item-row">
+      <div class="info"><div class="name">Pileća prsa</div><div class="desc">kečap, pavlaka, kačkavalj</div></div>
+      <div class="price">350</div>
+    </div>
+    <div class="item-row">
+      <div class="info"><div class="name">Replay</div><div class="desc">pečenica, kulen, kečap, pavlaka, kačkavalj</div></div>
+      <div class="price">400</div>
+    </div>
+  </section>
+
+  <!-- SLATKE PALACINKE -->
+  <section id="slatke">
+    <div class="section-title"><h2>Slatke palačinke</h2><div class="rule"></div></div>
+    <div class="item-row"><div class="info"><div class="name">Nutella</div></div><div class="price">250</div></div>
+    <div class="item-row"><div class="info"><div class="name">Eurokrem</div></div><div class="price">250</div></div>
+    <div class="item-row"><div class="info"><div class="name">Beli krem</div></div><div class="price">250</div></div>
+    <div class="item-row"><div class="info"><div class="name">Džem / kajsija</div></div><div class="price">250</div></div>
+
+    <div class="subgroup-label">Voćni nadev</div>
+    <div class="item-row"><div class="info"><div class="name">Šumsko voće, jagoda, višnja</div></div><div class="price">250</div></div>
+    <div class="item-row"><div class="info"><div class="name">Tropsko voće, malina</div></div><div class="price">300</div></div>
+  </section>
+
+  <!-- SPECIJAL PALACINKE -->
+  <section id="specijal">
+    <div class="section-title"><h2>Specijal palačinke</h2><div class="rule"></div></div>
+    <div class="item-row"><div class="info"><div class="name">Pistaći</div><div class="desc">krem od pistaća</div></div><div class="price">400</div></div>
+    <div class="item-row"><div class="info"><div class="name">Ferrero Rocher</div><div class="desc">hrskavi ferrero sa lešnikom</div></div><div class="price">400</div></div>
+    <div class="item-row"><div class="info"><div class="name">Raffaelo</div><div class="desc">mlečni raffaelo krem</div></div><div class="price">400</div></div>
+    <div class="item-row"><div class="info"><div class="name">Kinder Bueno</div><div class="desc">mlečni kinder bueno krem</div></div><div class="price">400</div></div>
+    <div class="item-row"><div class="info"><div class="name">Bounty</div><div class="desc">nutella i mlečni kokos krem</div></div><div class="price">400</div></div>
+    <div class="item-row"><div class="info"><div class="name">Švarcvald</div><div class="desc">nutella, višnje, fil od slatke pavlake i plazme</div></div><div class="price">400</div></div>
+    <div class="item-row"><div class="info"><div class="name">Kapri</div><div class="desc">nutella, jagode, fil od slatke pavlake i plazme</div></div><div class="price">400</div></div>
+    <div class="item-row"><div class="info"><div class="name">Cheesecake</div><div class="desc">beli krem, šum. voće, fil od slatke pavlake i plazme</div></div><div class="price">400</div></div>
+    <div class="item-row"><div class="info"><div class="name">Kinder čokolada</div></div><div class="price">300</div></div>
+    <div class="item-row"><div class="info"><div class="name">Kiddy</div><div class="desc">mlečni krem jagoda</div></div><div class="price">300</div></div>
+    <div class="item-row"><div class="info"><div class="name">Twiks</div><div class="desc">nutella, plazma, karamela</div></div><div class="price">350</div></div>
+    <div class="item-row"><div class="info"><div class="name">Snickers</div><div class="desc">nutella, kikiriki, karamela</div></div><div class="price">400</div></div>
+    <div class="item-row"><div class="info"><div class="name">Dubai</div><div class="desc">pistać krem, nutella, kadaif, preliv, šlag</div></div><div class="price">500</div></div>
+    <div class="item-row"><div class="info"><div class="name">Banana split</div><div class="desc">krem keks, banana, 2 kugle sladoled, toping čokolada, šlag</div></div><div class="price">450</div></div>
+    <div class="item-row"><div class="info"><div class="name">Jaffa krem</div></div><div class="price">300</div></div>
+  </section>
+
+  <!-- MINI PALACINKE -->
+  <section id="mini">
+    <div class="section-title"><h2>Mini palačinke</h2><div class="rule"></div></div>
+    <div class="item-row"><div class="info"><div class="name">Nutella</div></div><div class="price">250</div></div>
+    <div class="item-row"><div class="info"><div class="name">Eurokrem</div></div><div class="price">250</div></div>
+    <div class="item-row"><div class="info"><div class="name">Beli krem</div></div><div class="price">250</div></div>
+
+    <div class="subgroup-label">Voćni nadev</div>
+    <div class="item-row"><div class="info"><div class="name">Šumsko voće, jagoda, višnja</div></div><div class="price">250</div></div>
+    <div class="item-row"><div class="info"><div class="name">Tropsko voće, malina</div></div><div class="price">300</div></div>
+  </section>
+
+  <!-- DODACI -->
+  <section id="dodaci">
+    <div class="section-title"><h2>Dodaci</h2><div class="rule"></div></div>
+
+    <div class="subgroup-label">Za slane / sendviče i specijal palačinke</div>
+    <div class="addon-grid">
+      <div class="addon"><span>Plazma</span><span class="price">50</span></div>
+      <div class="addon"><span>Kikiriki</span><span class="price">70</span></div>
+      <div class="addon"><span>Orasi</span><span class="price">70</span></div>
+      <div class="addon"><span>Kokos</span><span class="price">50</span></div>
+      <div class="addon"><span>Banana</span><span class="price">70</span></div>
+      <div class="addon"><span>Jagoda</span><span class="price">50</span></div>
+      <div class="addon"><span>Malina</span><span class="price">100</span></div>
+      <div class="addon"><span>Višnja</span><span class="price">50</span></div>
+      <div class="addon"><span>Šumsko voće</span><span class="price">50</span></div>
+      <div class="addon"><span>Plazma u mleku</span><span class="price">80</span></div>
+      <div class="addon"><span>Tropsko voće</span><span class="price">100</span></div>
+      <div class="addon"><span>Sladoled kugla</span><span class="price">100</span></div>
+    </div>
+
+    <div class="subgroup-label">Za mini palačinke</div>
+    <div class="addon-grid">
+      <div class="addon"><span>Plazma</span><span class="price">80</span></div>
+      <div class="addon"><span>Kikiriki</span><span class="price">80</span></div>
+      <div class="addon"><span>Orasi</span><span class="price">80</span></div>
+      <div class="addon"><span>Kokos</span><span class="price">60</span></div>
+      <div class="addon"><span>Banana</span><span class="price">100</span></div>
+      <div class="addon"><span>Jagoda</span><span class="price">80</span></div>
+      <div class="addon"><span>Malina</span><span class="price">100</span></div>
+      <div class="addon"><span>Višnja</span><span class="price">80</span></div>
+      <div class="addon"><span>Šumsko voće</span><span class="price">80</span></div>
+      <div class="addon"><span>Plazma u mleku</span><span class="price">100</span></div>
+      <div class="addon"><span>Tropsko voće</span><span class="price">100</span></div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="line"></div>
+    Caffe & Food Bar Replay — Sivac
+  </footer>
+
+  <script>
+    // Highlight active nav link on scroll
+    const sections = document.querySelectorAll('section');
+    const navLinks = document.querySelectorAll('.nav a');
+
+    function onScroll() {
+      let current = '';
+      sections.forEach(sec => {
+        const rect = sec.getBoundingClientRect();
+        if (rect.top <= 100) current = sec.id;
+      });
+      navLinks.forEach(link => {
+        link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+      });
+    }
+    window.addEventListener('scroll', onScroll);
+    onScroll();
+  </script>
+
+</body>
+</html>
